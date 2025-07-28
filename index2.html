@@ -508,7 +508,7 @@ else if (popup) {
 }
 
 window.addEventListener("click", handleClickOrTouch);
-window.addEventListener("touchstart", handleClickOrTouch);
+window.addEventListener("touchend", handleClickOrTouch);
 
 renderer.setAnimationLoop(() => {
   const elapsed = (performance.now() - filmStartTime) * 0.001;
