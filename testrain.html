@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thư Tình</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('background.png') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    .letter {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 330px;
+      padding: 25px 20px;
+      background: #fffaf8dd;
+      transform: translate(-50%, -50%) rotate(-1deg);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      border-radius: 5px;
+      line-height: 1.8;
+      color: #a33;
+      font-size: 16px;
+      text-align: justify;
+      z-index: 2;
+      opacity: 0;
+      animation: fade-in 1.5s ease forwards;
+      animation-delay: 4s;
+    }
+
+    .polaroid {
+      position: absolute;
+      width: 100px;
+      background: white;
+      padding: 5px;
+      box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+      border-radius: 4px;
+      transition: transform 0.3s ease;
+      opacity: 0;
+      animation: fade-in 1.2s ease forwards;
+    }
+
+    .polaroid:hover {
+      transform: scale(1.1) rotate(0deg);
+      z-index: 10;
+    }
+
+    .polaroid img {
+      width: 100%;
+      border-radius: 3px;
+      display: block;
+    }
+
+    .pol1 { top: 10%; left: 5%; transform: rotate(-15deg); animation-delay: 0.5s; }
+    .pol2 { top: 5%; right: 10%; transform: rotate(10deg); animation-delay: 1s; }
+    .pol3 { top: 65%; left: 3%; transform: rotate(-5deg); animation-delay: 1.5s; }
+    .pol4 { bottom: 8%; right: 5%; transform: rotate(8deg); animation-delay: 2s; }
+    .pol5 { bottom: 7%; left: 40%; transform: rotate(-12deg); animation-delay: 2.5s; }
+
+    @keyframes fade-in {
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* --- Cinema overlay --- */
+    .cinema-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: black;
+      z-index: 999;
+      opacity: 1;
+      transition: opacity 2s ease;
+    }
+
+    .cinema-overlay.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- Hiệu ứng cinema mở đầu -->
+  <div class="cinema-overlay" id="cinemaOverlay"></div>
+
+  <div class="container">
+    <!-- Ảnh Polaroid -->
+    <div class="polaroid pol1"><img src="hinh1.jpg" alt="Ảnh 1"></div>
+    <div class="polaroid pol2"><img src="hinh2.jpg" alt="Ảnh 2"></div>
+    <div class="polaroid pol3"><img src="hinh3.jpg" alt="Ảnh 3"></div>
+    <div class="polaroid pol4"><img src="hinh4.jpg" alt="Ảnh 4"></div>
+    <div class="polaroid pol5"><img src="hinh5.jpg" alt="Ảnh 5"></div>
+
+    <!-- Thư tình -->
+    <div class="letter">
+      <p>
+        Heluu em bé, mọi thứ này anh đã chuẩn bị từ lâu,
+        chờ vào ngày hôm nay để dành tặng cho em. Tuy 
+        chúng ta chỉ mới gặp lại nhau một khoảng thời gian
+        ngắn thôi nhưng anh <br>
+        Anh như mặt trời dịu dàng của riêng em
+      </p>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('load', function () {
+      document.getElementById('cinemaOverlay').classList.add('fade-out');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Mật khẩu</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    .title {
+    margin-bottom: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    color: #d6336c; /* Hồng đậm – bạn có thể đổi thành #333 hoặc #6366f1 nếu muốn tone tím */
+    text-align: center;
+    }
+
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #1e1e1e;
+      color: white;
+      margin: 0;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      background: #2c2c2c;
+      border-radius: 12px;
+      padding: 30px 40px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      max-width: 1000px;
+      width: 100%;
+      gap: 40px;
+    }
+
+    .image {
+      flex: 0 0 45%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .image img {
+      max-width: 100%;
+      height: auto;
+      max-height: 550px;
+      border-radius: 16px;
+      object-fit: cover;
+    }
+
+    .input-area {
+      flex: 0 0 55%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .display {
+      width: 220px;
+      height: 55px;
+      margin-bottom: 20px;
+      font-size: 26px;
+      text-align: center;
+      border: 2px solid #f28c8c;
+      border-radius: 10px;
+      background-color: #fff;
+      background: #1e1e1e;
+      color: white;
+    border-color: #ff5e5e;
+    }
+
+    .keyboard {
+      display: grid;
+      grid-template-columns: repeat(3, 80px);
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .keyboard button {
+      padding: 20px;
+      font-size: 24px;
+      background-color: #ff5e5e;
+      color: white;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .keyboard button:hover {
+      background-color: #ff1f1f;
+      transform: scale(1.05);
+    }
+
+    .error {
+      margin-top: 12px;
+      color: #ff9999;
+      font-size: 15px;
+      visibility: hidden;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="image">
+    <img src="2.jpg" alt="Hình nền mật khẩu">
+  </div>
+  <div class="input-area">
+    <h2 class="title">Password là ngày tháng sinh của bé ớ💖</h2>
+    <input type="password" id="password" class="display" disabled value="">
+    <div class="keyboard">
+      <button onclick="press('1')">1</button>
+      <button onclick="press('2')">2</button>
+      <button onclick="press('3')">3</button>
+      <button onclick="press('4')">4</button>
+      <button onclick="press('5')">5</button>
+      <button onclick="press('6')">6</button>
+      <button onclick="press('7')">7</button>
+      <button onclick="press('8')">8</button>
+      <button onclick="press('9')">9</button>
+      <button onclick="press('0')">0</button>
+      <button onclick="clearInput()">×</button>
+    </div>
+    <div class="error" id="error">Sai òi bé ơiii</div>
+  </div>
+</div>
+
+<script>
+  const input = document.getElementById("password");
+  const errorText = document.getElementById("error");
+
+  const correctPassword = "1709"; // Mật khẩu đúng
+  let userInput = "";
+
+  function press(num) {
+    if (userInput.length < 4) {
+      userInput += num;
+      input.value += "*";
+    }
+
+    if (userInput.length === 4) {
+      if (userInput === correctPassword) {
+        window.location.href = "index2.html"; // Nếu đúng, chuyển trang
+      } else {
+        errorText.style.visibility = "visible";
+        clearInput();
+      }
+    }
+  }
+
+  function clearInput() {
+    userInput = "";
+    input.value = "";
+  }
+</script>
+
+</body>
+</html>

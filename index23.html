@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bé chơi trò này iii</title>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Quicksand', sans-serif;
+      color: #fff;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .hearts {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: url('3.png') no-repeat center center;
+      background-size: contain;
+      opacity: 0.4;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      0% {
+        transform: translateY(-10%);
+        opacity: 0.5;
+      }
+      100% {
+        transform: translateY(110vh);
+        opacity: 0;
+      }
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 28px;
+      font-family: 'Pacifico', cursive;
+      color: #ffcbcb;
+      text-shadow: 1px 1px 3px #000;
+    }
+
+    #puzzle {
+      width: 306px;
+      height: 306px;
+      margin: 20px auto;
+      position: relative;
+      border: 4px solid #ff8fa3;
+      border-radius: 16px;
+      box-shadow: 0 0 12px #ff8fa3;
+      background-color: #222;
+    }
+
+    .tile {
+      width: 100px;
+      height: 100px;
+      box-sizing: border-box;
+      border: 1px solid #fff;
+      background-image: url("1.jpg");
+      background-size: 300px 300px;
+      position: absolute;
+      transition: transform 0.2s ease;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .hidden {
+      visibility: hidden;
+    }
+
+    .reveal {
+      visibility: visible !important;
+      opacity: 0;
+      animation: fadeIn 1s forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+    #autoSolveBtn {
+      margin-top: 15px;
+      font-size: 14px;
+      opacity: 0.3;
+      background: none;
+      color: #fff;
+      border: 1px dashed #aaa;
+      padding: 6px 16px;
+      cursor: pointer;
+      transition: opacity 0.3s ease, border-color 0.3s;
+      position: relative;
+      font-family: 'Quicksand', sans-serif;
+    }
+
+    #autoSolveBtn:hover {
+      opacity: 0.8;
+      border-color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="hearts"></div>
+<h2>🧩 Bé chơi trò này iii</h2>
+<div id="puzzle"></div>
+<button id="autoSolveBtn" onclick="autoSolve()">Chịu thua</button>
+
+<script>
+  const size = 3;
+  const puzzle = document.getElementById("puzzle");
+  const tiles = [];
+  let emptyPosition = { x: 2, y: 2 };
+
+  function shuffle(array) {
+    return array.sort(() => Math.random() - 0.5);
+  }
+
+  function createTiles() {
+    const positions = [];
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        positions.push({ x, y });
+      }
+    }
+
+    const shuffled = shuffle([...positions]);
+
+    for (let i = 0; i < positions.length; i++) {
+      const { x, y } = positions[i];
+      const { x: sx, y: sy } = shuffled[i];
+
+      const tile = document.createElement("div");
+      tile.className = "tile";
+      tile.style.backgroundPosition = `-${x * 100}px -${y * 100}px`;
+      tile.dataset.correct = `${x},${y}`;
+      tile.dataset.x = sx;
+      tile.dataset.y = sy;
+
+      if (sx === 2 && sy === 2) {
+        tile.classList.add("hidden");
+        emptyPosition = { x: sx, y: sy };
+      }
+
+      tile.addEventListener("click", () => handleClick(tile));
+      tiles.push(tile);
+      puzzle.appendChild(tile);
+    }
+
+    updateTiles();
+  }
+
+  function updateTiles() {
+    tiles.forEach(tile => {
+      const x = parseInt(tile.dataset.x);
+      const y = parseInt(tile.dataset.y);
+      tile.style.transform = `translate(${x * 102}px, ${y * 102}px)`;
+    });
+  }
+
+  function handleClick(tile) {
+    const x = parseInt(tile.dataset.x);
+    const y = parseInt(tile.dataset.y);
+    const dx = Math.abs(x - emptyPosition.x);
+    const dy = Math.abs(y - emptyPosition.y);
+
+    if ((dx === 1 && dy === 0) || (dx === 0 && dy === 1)) {
+      const oldEmpty = { ...emptyPosition };
+      emptyPosition = { x, y };
+      tile.dataset.x = oldEmpty.x;
+      tile.dataset.y = oldEmpty.y;
+      updateTiles();
+
+      setTimeout(() => {
+        if (isSolved()) {
+          const hiddenTile = tiles.find(t => t.classList.contains("hidden"));
+          hiddenTile.classList.remove("hidden");
+          hiddenTile.classList.add("reveal");
+
+          setTimeout(() => {
+            window.location.href = "index1.html";
+          }, 2000);
+        }
+      }, 300);
+    }
+  }
+
+  function isSolved() {
+    return tiles.every(tile => {
+      const x = parseInt(tile.dataset.x);
+      const y = parseInt(tile.dataset.y);
+      const [correctX, correctY] = tile.dataset.correct.split(',').map(Number);
+      return x === correctX && y === correctY;
+    });
+  }
+
+  function autoSolve() {
+    tiles.forEach(tile => {
+      const [correctX, correctY] = tile.dataset.correct.split(',').map(Number);
+      tile.dataset.x = correctX;
+      tile.dataset.y = correctY;
+    });
+
+    emptyPosition = { x: 2, y: 2 };
+    updateTiles();
+
+    setTimeout(() => {
+      const hiddenTile = tiles.find(t => t.classList.contains("hidden"));
+      hiddenTile.classList.remove("hidden");
+      hiddenTile.classList.add("reveal");
+
+      setTimeout(() => {
+        window.location.href = "index1.html";
+      }, 2000);
+    }, 500);
+  }
+
+  function createHeartRain(count = 40) {
+    const container = document.querySelector('.hearts');
+    for (let i = 0; i < count; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = `${Math.random() * 100}%`;
+      heart.style.animationDuration = `${2 + Math.random() * 3}s`;
+      heart.style.animationDelay = `${Math.random() * 5}s`;
+      heart.style.opacity = `${0.2 + Math.random() * 0.5}`;
+      heart.style.transform = `scale(${0.5 + Math.random()})`;
+      container.appendChild(heart);
+    }
+  }
+
+  createTiles();
+  createHeartRain(40);
+</script>
+
+</body>
+</html>

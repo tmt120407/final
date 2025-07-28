@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Thư sinh nhật</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #ffeaea;
+    }
+
+    #container {
+      position: relative;
+      width: 300px;
+      cursor: pointer;
+    }
+
+    .layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    #closedLetter {
+      z-index: 3;
+    }
+
+    #openLetter {
+      z-index: 2;
+      opacity: 0;
+    }
+
+    #openLetter.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+<div id="container">
+  <!-- Thư đóng -->
+  <img id="closedLetter" class="layer" src="closed.png" alt="Thư đóng">
+
+  <!-- Thư mở có nội dung -->
+  <img id="openLetter" class="layer" src="open.png" alt="Thư mở">
+</div>
+
+<script>
+  const closed = document.getElementById("closedLetter");
+  const open = document.getElementById("openLetter");
+
+  let state = 0;
+  // 0: thư đóng
+  // 1: mở ra có thư
+  // 2: mở hoàn toàn thấy nội dung
+  // 3: đóng lại
+
+  document.getElementById("container").addEventListener("click", () => {
+    if (state === 0) {
+      open.classList.add("show");
+      closed.style.opacity = 0;
+      state = 1;
+    } else if (state === 1) {
+      open.src = "open.png"; // hình có thư và nội dung
+      state = 2;
+    } else if (state === 2) {
+      open.classList.remove("show");
+      closed.style.opacity = 1;
+      state = 3;
+    } else {
+      state = 0;
+    }
+  });
+</script>
+
+</body>
+</html>
