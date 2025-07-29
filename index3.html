@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Em làm người yêu anh nhé!</title>
+  <title>Mình Quen Nhau Nha! ^^</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -153,7 +153,7 @@ body {
       Trình duyệt không hỗ trợ video.
     </video>
 
-    <h2>Em làm người yêu anh nhé!</h2>
+    <h2>Mình Quen Nhau Nha</h2>
 
     <div class="buttons">
       <button class="btn yes" id="yesBtn">Dạ</button>
@@ -163,7 +163,9 @@ body {
 
   <img src="background3.gif" id="finalImage" alt="Yêu rồi nha!">
   <div id="finalText">
-  Hôm nay sẽ là ngày kỉ niệm hàng năm của chúng ta 🥰<br>
+  Hôm nay sẽ là ngày kỉ niệm hàng năm của chúng ta
+  <input type="text" id="memoryDate" placeholder="" style="padding: 6px 10px; font-size: 16px; border-radius: 6px; border: none; margin: 0 6px;">
+  🥰<br>
   <span class="heartbeat-text">Anh Yêu Em</span>
 </div>
 
@@ -210,6 +212,21 @@ body {
       // Stop sau 6s nếu muốn
       setTimeout(() => clearInterval(interval), 6000);
     }
+
+
+    const memoryDateInput = document.getElementById('memoryDate');
+// Ghi vào localStorage khi thay đổi
+memoryDateInput.addEventListener('input', () => {
+  localStorage.setItem('anniversaryDate', memoryDateInput.value);
+});
+
+// Nếu đã từng lưu rồi thì hiện lại
+window.addEventListener('DOMContentLoaded', () => {
+  const savedDate = localStorage.getItem('anniversaryDate');
+  if (savedDate) {
+    memoryDateInput.value = savedDate;
+  }
+});
   </script>
 
 </body>
