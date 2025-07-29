@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Mật khẩu</title>
+  <title>Bé đoán đi</title>
   <style>
     * {
       box-sizing: border-box;
@@ -107,14 +107,26 @@
     }
   </style>
 </head>
+
+<div id="hintPopup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; color:#333; padding:20px 30px; border-radius:12px; box-shadow:0 5px 30px rgba(0,0,0,0.3); z-index:1000; max-width:300px; text-align:center;">
+  <p>Hong Biết Thì Ôm Tui Cái Đi Tui Chỉ Choaa</p>
+  <button onclick="hideHint()" style="margin-top: 12px; padding: 6px 12px; background-color: #6366f1; color: white; border: none; border-radius: 8px;">Đóng</button>
+</div>
+
+<div id="hintImagePopup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.5); z-index:2000; text-align:center;">
+  <img src="mess1.png" alt="Ảnh gợi ý" style="max-width:95vw; max-height:85vh; border-radius:14px;">
+  <br>
+  <button onclick="hideHintImage()" style="margin-top:12px; padding: 6px 12px; background-color: #00bcd4; color: white; border: none; border-radius: 8px;">Đóng ảnh</button>
+</div>
+
 <body>
 
 <div class="container">
   <div class="image">
-    <img src="2.jpg" alt="Hình nền mật khẩu">
+    <img src="hinh5.jpg" alt="Hình nền mật khẩu">
   </div>
   <div class="input-area">
-    <h2 class="title">Password là ngày tháng sinh của bé ớ💖</h2>
+    <h2 class="title">Ngày Tháng Năm Mình Gặp Lại Nhau💖</h2>
     <input type="password" id="password" class="display" disabled value="">
     <div class="keyboard">
       <button onclick="press('1')">1</button>
@@ -128,25 +140,46 @@
       <button onclick="press('9')">9</button>
       <button onclick="press('0')">0</button>
       <button onclick="clearInput()">×</button>
+
+      <button onclick="showHint()" style="margin-top: 20px; padding: 10px 20px; background-color: #6366f1; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">🪄 Gợi ý</button>
+      <button id="hint2Btn" onclick="showHintImage()" style="display: none; margin-top: 10px; padding: 10px 20px; background-color: #00bcd4; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">🖼️ Xem ảnh gợi ý</button>
+
     </div>
     <div class="error" id="error">Sai òi bé ơiii</div>
   </div>
 </div>
 
 <script>
+
+function showHintImage() {
+  document.getElementById("hintImagePopup").style.display = "block";
+}
+
+function hideHintImage() {
+  document.getElementById("hintImagePopup").style.display = "none";
+}
+
+  function showHint() {
+  document.getElementById("hintPopup").style.display = "block";
+}
+
+function hideHint() {
+  document.getElementById("hintPopup").style.display = "none";
+  document.getElementById("hint2Btn").style.display = "inline-block"; // Hiện nút gợi ý 2
+}
   const input = document.getElementById("password");
   const errorText = document.getElementById("error");
 
-  const correctPassword = "1709"; // Mật khẩu đúng
+  const correctPassword = "07072025"; // Mật khẩu đúng
   let userInput = "";
 
   function press(num) {
-    if (userInput.length < 4) {
+    if (userInput.length < 8) {
       userInput += num;
       input.value += "*";
     }
 
-    if (userInput.length === 4) {
+    if (userInput.length === 8) {
       if (userInput === correctPassword) {
         window.location.href = "index2.html"; // Nếu đúng, chuyển trang
       } else {
