@@ -2,11 +2,39 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Mật khẩu</title>
+  <title>Bé Nhập Pass đi</title>
   <style>
     * {
       box-sizing: border-box;
     }
+
+    @media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .keyboard {
+    grid-template-columns: repeat(3, 60px);
+    gap: 12px;
+  }
+
+  .keyboard button {
+    padding: 16px;
+    font-size: 20px;
+  }
+
+  .display {
+    width: 180px;
+    height: 45px;
+    font-size: 20px;
+  }
+
+  .image img {
+    max-height: 250px;
+  }
+}
 
     .title {
     margin-bottom: 20px;
