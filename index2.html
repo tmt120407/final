@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Chúc mừng sinh nhật Bé</title>
+  <title>Dành tặng cho bé</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap');
     body {
@@ -56,12 +56,55 @@
 </div>
 
 <script type="module">
+// PHẦN GỢI Ý BỔ SUNG
 import * as THREE from "https://cdn.skypack.dev/three@0.136.0";
-import { OrbitControls } from "https://cdn.skypack.dev/three@0.136.0/examples/jsm/controls/OrbitControls";
+import { OrbitControls } from "https://cdn.skypack.dev/three@0.136.0/examples/jsm/controls/OrbitControls.js";
 import { FontLoader } from "https://cdn.skypack.dev/three@0.136.0/examples/jsm/loaders/FontLoader.js";
 import { TextGeometry } from "https://cdn.skypack.dev/three@0.136.0/examples/jsm/geometries/TextGeometry.js";
+import gsap from "https://cdn.skypack.dev/gsap@3.12.2";
+import { Howl, Howler } from "https://cdn.skypack.dev/howler@2.2.3";
+// Nhạc nền
+const bgm = new Howl({
+  src: ['https://cdn.pixabay.com/audio/2022/03/17/audio_72b3c6e8c7.mp3'],
+  loop: true,
+  volume: 0.3
+});
+bgm.play();
 
+// Âm thanh pop
+const popSound = new Howl({ src: ['https://assets.mixkit.co/sfx/download/mixkit-quick-win-video-game-notification-269.wav'], volume: 0.5 });
+function playPopSound() { popSound.play(); }
 
+function fireHeartParticles(scene, origin) {
+  const group = new THREE.Group();
+  for (let i = 0; i < 100; i++) {
+    const mat = new THREE.SpriteMaterial({ color: 0xff66cc });
+    const s = new THREE.Sprite(mat);
+    s.position.copy(origin);
+    s.scale.set(0.3, 0.3, 0.3);
+    group.add(s);
+    gsap.to(s.position, {
+      duration: 1.5,
+      x: s.position.x + (Math.random() - 0.5) * 10,
+      y: s.position.y + Math.random() * 5,
+      z: s.position.z + (Math.random() - 0.5) * 10,
+      onComplete: () => group.remove(s)
+    });
+    gsap.to(s.material, { duration: 1.5, opacity: 0 });
+  }
+  scene.add(group);
+}
+
+function createTextGlow(charGeom) {
+  const glowMaterial = new THREE.MeshBasicMaterial({ color: 0xff66cc, transparent: true, opacity: 0.3 });
+  const glowMesh = new THREE.Mesh(charGeom.clone(), glowMaterial);
+  glowMesh.scale.multiplyScalar(1.1);
+  return glowMesh;
+}
+
+function tweenCamera(camera) {
+  gsap.to(camera.position, { duration: 3, x: 10, z: 10, y: 6, onUpdate: () => camera.lookAt(0, 0, 0) });
+}
 // Scene setup
 const scene = new THREE.Scene();
 const shootingStars = [];
@@ -119,6 +162,7 @@ fontLoader.load(
     const message = "Món quà này anh dành tặng cho em bé ớ";
     const radius = 13.5;
     const textSize = 2;
+    
 
     for (let i = 0; i < message.length; i++) {
       const char = message[i];
@@ -207,6 +251,7 @@ let filmStartTime = performance.now();
 
 const orbitGroups = [];
 const spriteGroup = new THREE.Group();
+const popupSprites = [];
 spriteGroup.rotation.order = "ZYX";
 scene.add(spriteGroup);
 
@@ -234,7 +279,16 @@ for (let i = 0; i < 1000; i++) {
   const angle = Math.random() * Math.PI * 2;
   const yPos = (Math.random() - 0.5) * 10;
   sprite.position.set(radius * Math.cos(angle), yPos, radius * Math.sin(angle));
-  orbitGroup.add(sprite);
+  const planetGroup = new THREE.Group();
+  planetGroup.add(sprite);
+sprite.position.set(0, 0, 0); // sprite ở tâm của planetGroup
+
+// Đặt planetGroup vào quỹ đạo:
+planetGroup.position.set(radius * Math.cos(angle), 0, radius * Math.sin(angle));
+orbitGroup.add(planetGroup);
+
+// Lưu group và sprite nếu cần
+orbitGroups.push(orbitGroup); // cái này có thể bỏ nếu bạn đã lặp rồi
   const s = Math.random() * 0.3 + 0.1;
   sprite.scale.set(s, s, 1);
   spriteGroup.add(sprite);
@@ -244,7 +298,7 @@ for (let i = 0; i < 1000; i++) {
 
 const imageSources = [
   "saomoc.png", "saokim.png", "saohoa.png", "saotho.png",
-  /*"saothienvuong.png", "saohaivuong.png", "mattrang.png"*/, "heart1.png",
+  /*"saothienvuong.png", "saohaivuong.png", "mattrang.png"*/, "be5.jpg",
   "planet1.png", "planet2.png"
 ];
 
@@ -272,6 +326,9 @@ function generateValidPosition() {
   }
   return { x: 0, y: 0, z: 0 }; // fallback
 }
+const fixedPlanets = ["saomoc.png", "saokim.png", "saohoa.png", "saotho.png"];
+const radius = 25;
+let fixedIndex = 0;
 imageSources.forEach((src) => {
   const textureLoader = new THREE.TextureLoader();
   textureLoader.load(src, (texture) => {
@@ -284,8 +341,10 @@ sprite.originalScale = sprite.scale.clone();
     scene.add(orbitGroup);
 
 let radius, angle, yPos;
-if (src === "heart1.png") {
+if (src === "be5.jpg") {
   sprite.position.set(0, 0, 0);
+  sprite.scale.set(12, 12, 1);
+  sprite.material.opacity = 1.0; // ⬅️ đảm bảo không mờ
   sprite.userData.isHeart = true;
 } else {
   const pos = generateValidPosition();
@@ -300,7 +359,7 @@ if (src === "heart1.png") {
   /*"saothienvuong.png": "1.jpg",
   "saohaivuong.png": "1.jpg",
   "mattrang.png": "1.jpg",*/
-  "heart1.png": "1.jpg",
+  "be5.jpg": "1.jpg",
   "planet1.png": "1.jpg",
   "planet2.png": "1.jpg"
 };
@@ -343,7 +402,7 @@ g.setAttribute("colorIndex", new THREE.Float32BufferAttribute(colorIndex, 1));
 const m = new THREE.PointsMaterial({
   size: 0.125,
   transparent: true,
-  depthTest: false,
+  depthTest: true,
   blending: THREE.AdditiveBlending,
   onBeforeCompile: (shader) => {
     shader.uniforms.time = gu.time;
@@ -392,6 +451,7 @@ const points = new THREE.Points(g, m);
 scene.add(points);
 
 let selectedSprite = null;
+let heartClickCount = 0;
 // Heart image sprite
 const loader = new THREE.ImageLoader();
 loader.load("traitim.png", function (image) {
@@ -429,6 +489,7 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
 let popupSprite = null;
+let popupTargetSprite = null;
 function handleClickOrTouch(event) {
   const x = event.clientX || event.touches?.[0]?.clientX;
   const y = event.clientY || event.touches?.[0]?.clientY;
@@ -436,13 +497,30 @@ function handleClickOrTouch(event) {
   mouse.y = -(y / window.innerHeight) * 2 + 1;
   raycaster.setFromCamera(mouse, camera);
 
+const intersectsPopup = raycaster.intersectObjects(popupSprites);
+if (intersectsPopup.length > 0) {
+  const clickedPopup = intersectsPopup[0].object;
+
+  // Xóa chính popup này
+  if (clickedPopup.parent) clickedPopup.parent.remove(clickedPopup);
+  scene.remove(clickedPopup);
+  clickedPopup.material.dispose();
+
+  // Gỡ khỏi mảng popupSprites
+  const index = popupSprites.indexOf(clickedPopup);
+  if (index !== -1) popupSprites.splice(index, 1);
+
+  return; // Dừng, không xử lý tiếp (không hiện thêm popup nào nữa)
+}
+
+
   const intersectsClickable = raycaster.intersectObjects(clickableSprites);
 const popup = document.getElementById("popupImage");
 
 // Nếu bấm vào sprite
 if (intersectsClickable.length > 0) {
   const clickedSprite = intersectsClickable[0].object;
-  if (clickedSprite.userData.isTraitim) {
+  if (clickedSprite.userData.isTraitim === true) {
   console.log("Đã click vào traitim.png — không hiện popup.");
   return;
 }
@@ -453,52 +531,125 @@ if (!clickedSprite.userData.isHeart && clickedSprite.originalScale) {
   const imgSrc = clickedSprite.userData.image;
 
   // Nếu là trái tim thì thêm sự kiện click để chuyển trang
-  if (clickedSprite.userData.isHeart) {
-    console.log("Trái tim được bấm!");
-    if (popup) popup.remove();
+  if (clickedSprite.userData.isHeart === true) {
+  heartClickCount++;
+  console.log(`Đã click vào be5.jpg ${heartClickCount} lần`);
+
+  if (heartClickCount >= 5) {
+    window.location.href = "index3.html";
+  } else {
+    // Hiệu ứng nhẹ nếu chưa đủ 3 lần
+    gsap.to(clickedSprite.scale, {
+      x: clickedSprite.originalScale.x * 1.2,
+      y: clickedSprite.originalScale.y * 1.2,
+      duration: 0.15,
+      yoyo: true,
+      repeat: 1
+    });
+  }
+  return;
     
 
-    const img = document.createElement('img');
-    img.src = imgSrc;
-    img.style = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 80vw;
-      max-height: 80vh;
-      border: 4px solid white;
-      border-radius: 12px;
-      box-shadow: 0 0 20px #fff;
-      z-index: 9999;
-      cursor: pointer;
-    `;
-    img.id = "popupImage";
-    img.addEventListener("click", () => {
-    console.log("Đang chuyển sang index3.html...");
-    window.location.href = "index3.html";
-});
-    document.body.appendChild(img);
+if (popupSprite) {
+  scene.remove(popupSprite);
+  popupSprite.material.dispose();
+  popupSprite = null;
+}
+
+const img = new Image();
+img.onload = () => {
+  const aspect = img.width / img.height;
+  const popupHeight = 18;
+  const popupWidth = popupHeight * aspect;
+
+  const loader = new THREE.TextureLoader();
+  loader.load(imgSrc, (texture) => {
+    const mat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+    popupSprite = new THREE.Sprite(mat);
+    popupSprite.scale.set(popupWidth, popupHeight, 1);
+    popupSprites.push(popupSprite); // ← Lưu vào mảng quản lý
+    
+    popupSprite.userData.owner = clickedSprite;
+
+    popupTargetSprite = clickedSprite;
+
+    // Đặt đúng phía trên hành tinh
+    clickedSprite.updateWorldMatrix(true, false);
+    const worldPos = new THREE.Vector3();
+    clickedSprite.getWorldPosition(worldPos);
+    const popupYOffset = 0.5; // khoảng cách từ sprite lên popup
+    worldPos.y += clickedSprite.scale.y / 2 + popupHeight / 2 + popupYOffset;
+
+    popupSprite.position.copy(worldPos);
+    popupSprite.lookAt(camera.position);
+    popupSprite.material.opacity = 0;
+    // Tìm orbitGroup chứa clickedSprite
+const parentGroup = scene.children.find(group =>
+  group.type === "Group" &&
+  group.children.includes(clickedSprite)
+);
+
+if (parentGroup) {
+parentGroup.add(popupSprite);
+popupSprite.position.set(0, clickedSprite.scale.y / 2 + popupHeight / 2 + 0.5, 0);
+} else {
+  scene.add(popupSprite); // fallback nếu không tìm được group
+}
+popupSprite.lookAt(camera.position);
+popupSprite.material.opacity = 0;
+gsap.to(popupSprite.material, { opacity: 1, duration: 0.5 });
+    gsap.to(popupSprite.material, { opacity: 1, duration: 0.5 });
+  });
+};
+img.src = imgSrc;
   } else {
-    // Nếu là sprite thường khác
-    if (popup) popup.remove();
-    const img = document.createElement('img');
-    img.src = imgSrc;
-    img.style = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      max-width: 80vw;
-      max-height: 80vh;
-      border: 4px solid white;
-      border-radius: 12px;
-      box-shadow: 0 0 20px #fff;
-      z-index: 9999;
-    `;
-    img.id = "popupImage";
-    document.body.appendChild(img);
-  }
+  // Nếu là sprite thường khác
+  if (popup) popup.remove();
+
+  const img = new Image();
+  img.onload = () => {
+    const aspect = img.width / img.height;
+    const popupHeight = 17; // có thể tăng lên nếu muốn
+    const popupWidth = popupHeight * aspect;
+
+    const loader = new THREE.TextureLoader();
+    loader.load(imgSrc, (texture) => {
+      const mat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+      popupSprite = new THREE.Sprite(mat);
+      popupSprite.scale.set(popupWidth, popupHeight, 1);
+
+      // Đặt đúng phía trên sprite vừa click
+      clickedSprite.updateWorldMatrix(true, false);
+      const worldPos = new THREE.Vector3();
+      clickedSprite.getWorldPosition(worldPos);
+      worldPos.y += clickedSprite.scale.y / 2 + popupHeight / 2 + 0.5;
+
+      popupSprite.lookAt(camera.position);
+      popupSprite.material.opacity = 0;
+      gsap.to(popupSprite.material, { opacity: 1, duration: 0.5 });
+      // Tìm orbitGroup chứa clickedSprite
+const parentGroup = scene.children.find(group =>
+  group.type === "Group" &&
+  group.children.includes(clickedSprite)
+);
+
+if (parentGroup) {
+  parentGroup.add(popupSprite); // Gắn popup vào cùng group
+  popupSprite.position.set(
+    clickedSprite.position.x,
+    clickedSprite.position.y + clickedSprite.scale.y / 2 + popupHeight / 2 + 0.5,
+    clickedSprite.position.z
+  );
+} else {
+  // fallback nếu không tìm được group
+  scene.add(popupSprite);
+  popupSprite.position.copy(worldPos); // fallback như cũ
+}
+
+    });
+  };
+  img.src = imgSrc;
+}
 }
 // Nếu bấm ngoài => xóa popup nếu đang hiển thị
 else if (popup) {
@@ -510,9 +661,12 @@ else if (popup) {
 window.addEventListener("click", handleClickOrTouch);
 window.addEventListener("touchend", handleClickOrTouch);
 
+
+
 renderer.setAnimationLoop(() => {
   const elapsed = (performance.now() - filmStartTime) * 0.001;
 gu.time.value = elapsed * Math.PI;
+
 
 if (filmMode) {
   // Giai đoạn 1: từ xa zoom gần lại (0s - 5s)
