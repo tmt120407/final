@@ -150,6 +150,8 @@
 </div>
 
 <script>
+let hintClickCount = 0;
+let hintCloseCount = 0;
 
 function showHintImage() {
   document.getElementById("hintImagePopup").style.display = "block";
@@ -160,12 +162,18 @@ function hideHintImage() {
 }
 
   function showHint() {
+  hintClickCount++;
   document.getElementById("hintPopup").style.display = "block";
 }
 
 function hideHint() {
+  hintCloseCount++;
   document.getElementById("hintPopup").style.display = "none";
-  document.getElementById("hint2Btn").style.display = "inline-block"; // Hiện nút gợi ý 2
+
+  // Chỉ hiện nút hint2 nếu đã click và đóng 2 lần
+  if (hintClickCount >= 2 && hintCloseCount >= 2) {
+    document.getElementById("hint2Btn").style.display = "inline-block";
+  }
 }
   const input = document.getElementById("password");
   const errorText = document.getElementById("error");
