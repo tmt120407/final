@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
   <meta charset="UTF-8">
   <title>Bé đoán đi</title>
   <style>
@@ -105,12 +106,95 @@
       font-size: 15px;
       visibility: hidden;
     }
+
+    #startLoveBtn {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 99999;
+    }
+
+    .love-button {
+      position: relative;
+      display: inline-block;
+      padding: 20px 60px;
+      font-size: 28px;
+      color: white;
+      font-weight: bold;
+      letter-spacing: 1px;
+      background: linear-gradient(145deg, #ff5e78, #ff3366);
+      border: none;
+      border-radius: 50px;
+      box-shadow: 0 10px 25px rgba(255, 51, 102, 0.5);
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .love-button:hover {
+      transform: scale(1.07);
+      box-shadow: 0 15px 30px rgba(255, 51, 102, 0.8);
+    }
+
+    .love-button::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+      transform: rotate(45deg);
+      animation: shine 4s infinite linear;
+      z-index: 1;
+    }
+
+    @keyframes shine {
+      0% { transform: translate(-100%, -100%) rotate(45deg); }
+      100% { transform: translate(100%, 100%) rotate(45deg); }
+    }
+    #introText {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translate(-50%);
+  font-size: 60px;
+  font-family: 'Pacifico', cursive;
+  text-align: center;
+  display: none;
+  background: linear-gradient(90deg, #ff85a2, #fcb045, #a3f7bf);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glow 2s ease-in-out infinite alternate;
+  z-index: 2;
+  pointer-events: none;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
+}
+
+@keyframes glow {
+  0% { text-shadow: 0 0 10px #ff85a2; }
+  100% { text-shadow: 0 0 20px #ff3366; }
+}
+
   </style>
 </head>
 
 <div id="hintPopup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; color:#333; padding:20px 30px; border-radius:12px; box-shadow:0 5px 30px rgba(0,0,0,0.3); z-index:1000; max-width:300px; text-align:center;">
-  <p>Hong Biết Thì Ôm Tui Cái Đi Tui Chỉ Choaa</p>
-  <button onclick="hideHint()" style="margin-top: 12px; padding: 6px 12px; background-color: #6366f1; color: white; border: none; border-radius: 8px;">Đóng</button>
+  <p id="hintText">Hong Biết Thì Ôm Tui Cái Đi Tui Chỉ Choaa</p>
+  <button onclick="hideHint()" style="
+  margin-top: 16px;
+  padding: 8px 18px;
+  font-size: 16px;
+  background: linear-gradient(135deg, #ff5e78, #ff3366);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 5px 15px rgba(255, 51, 102, 0.3);
+  transition: all 0.25s ease;
+">Hông</button>
 </div>
 
 <div id="hintImagePopup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background:#fff; padding:20px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.5); z-index:2000; text-align:center;">
@@ -121,7 +205,37 @@
 
 <body>
 
-<div class="container">
+<div id="startLoveBtn">
+  <div class="love-button" onclick="startLove()">
+    <span>Start Love 💗</span>
+  </div>
+</div>
+
+
+<div id="introContainer" style="
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  overflow: hidden;
+">
+<video id="introVideo" muted style="max-width: 100%; max-height: 100%;">
+    <source src="intro2.mp4" type="video/mp4">
+    Trình duyệt của bạn không hỗ trợ video.
+  </video>
+  <div id="introText">
+  <span id="typewriterText"></span>
+</div>
+
+</div>
+
+<div class="container" id="mainContent" style="display: none;">
   <div class="image">
     <img src="hinh5.jpg" alt="Hình nền mật khẩu">
   </div>
@@ -142,8 +256,22 @@
       <button onclick="clearInput()">×</button>
 
       <button onclick="showHint()" style="margin-top: 20px; padding: 10px 20px; background-color: #6366f1; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">🪄 Gợi ý</button>
-      <button id="hint2Btn" onclick="showHintImage()" style="display: none; margin-top: 10px; padding: 10px 20px; background-color: #00bcd4; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer;">🖼️ Xem ảnh gợi ý</button>
-
+<button id="hint2Btn" onclick="showHintImage()" style="
+  display: none;
+  margin-top: 10px;
+  padding: 12px 28px;
+  font-size: 16px;
+  background-color: #00bcd4;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 5px 15px rgba(0, 188, 212, 0.3);
+  transition: all 0.3s ease;
+  min-width: 170px;
+  text-align: center;
+">🖼️ Gợi Ý Real Nà</button>
     </div>
     <div class="error" id="error">Sai òi bé ơiii</div>
   </div>
@@ -152,6 +280,11 @@
 <script>
 let hintClickCount = 0;
 let hintCloseCount = 0;
+
+function startLove() {
+    document.getElementById("startLoveBtn").style.display = "none";
+    document.getElementById("introContainer").style.display = "flex";
+  }
 
 function showHintImage() {
   document.getElementById("hintImagePopup").style.display = "block";
@@ -163,7 +296,15 @@ function hideHintImage() {
 
   function showHint() {
   hintClickCount++;
-  document.getElementById("hintPopup").style.display = "block";
+
+  const hintText = document.getElementById("hintText");
+  const hintPopup = document.getElementById("hintPopup");
+
+  if (hintClickCount === 2) {
+    hintText.textContent = "Hoi dậy cho tui hun cái ii rồi chỉ cho nà Hehe";
+  }
+
+  hintPopup.style.display = "block";
 }
 
 function hideHint() {
@@ -201,6 +342,47 @@ function hideHint() {
     userInput = "";
     input.value = "";
   }
+
+ function startLove() {
+  document.getElementById("startLoveBtn").style.display = "none";
+  const introContainer = document.getElementById("introContainer");
+  const introVideo = document.getElementById("introVideo");
+
+  introContainer.style.display = "flex";
+  introVideo.play(); // Phát video khi nhấn nút
+
+  // Sau 6 giây: hiện chữ intro
+  setTimeout(() => {
+    const textContainer = document.getElementById("introText");
+    textContainer.style.display = "block";
+    typeWriterEffect("Welcome to Minh Trí's Life💖", "typewriterText", 80);
+  }, 6000);
+
+  // Sau 10 giây: ẩn intro, hiện main
+  setTimeout(() => {
+    introContainer.style.transition = "opacity 1s";
+    introContainer.style.opacity = "0";
+    setTimeout(() => {
+      introContainer.style.display = "none";
+      document.getElementById("mainContent").style.display = "flex";
+    }, 1000);
+  }, 10000);
+}
+
+function typeWriterEffect(text, elementId, speed = 80) {
+  let i = 0;
+  const target = document.getElementById(elementId);
+  target.innerHTML = "";
+  function typeChar() {
+    if (i < text.length) {
+      target.innerHTML += text.charAt(i);
+      i++;
+      setTimeout(typeChar, speed);
+    }
+  }
+  typeChar();
+}
+
 </script>
 
 </body>
