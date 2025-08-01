@@ -4,18 +4,20 @@
   <meta charset="UTF-8">
   <title>Mình Quen Nhau Nha! ^^</title>
   <style>
+    
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: url('background1.png') no-repeat center center fixed;
-      background-size: cover;
-      margin: 0;
-      height: 100vh;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: url('background1.png') no-repeat center center fixed;
+  background-size: cover;
+  margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  visibility: hidden; /* ← thêm dòng này */
+}
 
     .container {
       background: rgba(255, 255, 255, 0.7);
@@ -143,31 +145,121 @@
 body {
   animation: fadeIn 1s ease-in-out;
 }
+
+.yes:hover {
+  animation: flash 0.8s infinite;
+  transform: scale(1.1);
+}
+
+@keyframes flash {
+  0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+  50% { box-shadow: 0 0 25px rgba(255, 255, 255, 1); }
+  100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+}
+
+
+#intro {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  color: black;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink {
+  50% { border-color: transparent; }
+}
+
+#mainContent {
+  display: none;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-slide-up {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeSlideUp 1s forwards;
+}
+
+@keyframes fadeSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+#finalImage, #finalText {
+  display: none;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+#fadeOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 1.5s ease;
+  pointer-events: none;
+}
   </style>
 </head>
 <body>
+  <div id="fadeOverlay"></div>
+  <div id="intro"></div>
 
+  <!-- PHẦN HIỂN THỊ CHÍNH -->
   <div class="container" id="mainContent">
-    <video autoplay loop muted>
+    <video id="introVideo" autoplay loop muted>
       <source src="12.mp4" type="video/mp4">
       Trình duyệt không hỗ trợ video.
     </video>
 
-    <h2>Mình Quen Nhau Nha</h2>
+    <h2 id="questionText">Mình Quen Nhau Nha</h2>
 
-    <div class="buttons">
+    <div class="buttons" id="answerButtons">
       <button class="btn yes" id="yesBtn">Dạ</button>
       <button class="btn no" id="noBtn">Hông</button>
     </div>
   </div>
 
+  <!-- PHẦN SAU KHI NHẤN "DẠ" — NẰM NGOÀI mainContent -->
   <img src="background3.gif" id="finalImage" alt="Yêu rồi nha!">
   <div id="finalText">
-  Hôm nay sẽ là ngày kỉ niệm hàng năm của chúng ta
-  <input type="text" id="memoryDate" placeholder="" style="padding: 6px 10px; font-size: 16px; border-radius: 6px; border: none; margin: 0 6px;">
-  🥰<br>
-  <span class="heartbeat-text">Anh Yêu Em</span>
-</div>
+    Hôm nay sẽ là ngày kỉ niệm hàng năm của chúng ta
+    <input type="text" id="memoryDate" placeholder="" style="padding: 6px 10px; font-size: 16px; border-radius: 6px; border: none; margin: 0 6px;">
+    🥰<br>
+    <span class="heartbeat-text">Anh Yêu Em</span>
+  </div>
 
   <script>
     const yesBtn = document.getElementById('yesBtn');
@@ -175,6 +267,76 @@ body {
     const mainContent = document.getElementById('mainContent');
     const finalImage = document.getElementById('finalImage');
     const finalText = document.getElementById('finalText');
+    const intro = document.getElementById('intro');
+const introText = "Anh có chuyện muốn nói với em...";
+let index = 0;
+
+
+yesBtn.addEventListener('click', () => {
+  mainContent.style.display = 'none';
+
+  // Hiện phần kết với hiệu ứng mềm mại
+  finalImage.style.display = 'block';
+  finalText.style.display = 'block';
+
+  finalImage.classList.add('fade-slide-up');
+  setTimeout(() => {
+    finalText.classList.add('fade-slide-up');
+  }, 1000); // hiệu ứng text trễ nhẹ sau ảnh
+
+  startHeartRain();
+});
+function typeWriter() {
+  if (index < introText.length) {
+    intro.innerHTML += introText.charAt(index);
+    index++;
+    setTimeout(typeWriter, 80); // tốc độ gõ, càng nhỏ càng nhanh
+  } else {
+    // Sau khi gõ xong, delay rồi ẩn và hiện mainContent
+    setTimeout(() => {
+      intro.style.transition = 'opacity 1s ease';
+      intro.style.opacity = '0';
+
+      setTimeout(() => {
+        intro.style.display = 'none';
+        mainContent.style.display = 'block';
+      }, 1000);
+    }, 6000); // chờ sau khi gõ xong
+  }
+}
+
+const fadeOverlay = document.getElementById('fadeOverlay');
+
+window.addEventListener('load', () => {
+  document.body.style.visibility = 'visible';
+
+  // Đợi một nhịp nhỏ rồi bắt đầu fade out
+  setTimeout(() => {
+    fadeOverlay.style.opacity = '0';
+
+    // Sau khi fade xong → remove và bắt đầu typeWriter
+    setTimeout(() => {
+      fadeOverlay.remove();
+
+      // ✅ Bắt đầu hiệu ứng gõ chữ sau khi fadeOverlay biến mất hoàn toàn
+      typeWriter();
+
+    }, 1500); // khớp với CSS transition: 1.5s
+  }, 100); // delay nhỏ chống giật trắng
+});
+
+
+// Hiện intro → rồi ẩn nó → hiện main content
+setTimeout(() => {
+  intro.style.transition = 'opacity 1s ease';
+  intro.style.opacity = '0';
+
+  setTimeout(() => {
+    intro.style.display = 'none';
+    mainContent.style.display = 'block'; // Sử dụng flex để giữ bố cục
+  }, 1000);
+}, 10000); // Tổng thời gian cho hiệu ứng typing + delay
+
 
     yesBtn.addEventListener('click', () => {
       mainContent.style.display = 'none';
