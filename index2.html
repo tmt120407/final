@@ -8,7 +8,7 @@
     body {
       overflow: hidden;
       margin: 0;
-      background: #160016;
+      background: #000000;
       font-family: 'Playfair Display', serif;
     }
 
@@ -18,6 +18,11 @@
       top: 0;
       left: 0;
     }
+
+    canvas.fade-in {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
 
     #scratchContainer {
       display: none;
@@ -45,9 +50,80 @@
       z-index: 2;
       border-radius: 12px;
     }
+
+    #introText {
+  position: absolute;
+  top: 42%;
+  width: 100%;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: #ff99cc;
+  z-index: 100;
+  font-family: 'Playfair Display', serif;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid #ff99cc;
+  animation: blinkCaret 0.7s step-end infinite;
+}
+
+@keyframes blinkCaret {
+  50% {
+    border-color: transparent;
+  }
+}
+
+
   </style>
+  
 </head>
 <body>
+
+<div id="blackout" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; z-index:999;"></div>
+
+<div id="introText"></div>
+<button id="startButton" style="display: none; z-index: 1000; position: absolute; top: 60%; left: 50%; transform: translateX(-50%); padding: 12px 24px; font-size: 18px; background-color: #ff66cc; color: white; border: none; border-radius: 8px; cursor: pointer; box-shadow: 0 0 10px rgba(255, 102, 204, 0.7); font-family: 'Playfair Display', serif;">
+  Bắt đầu
+</button>
+
+<style>
+#startButton {
+  display: none;
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 14px 28px;
+  font-size: 20px;
+  font-family: 'Playfair Display', serif;
+  background: linear-gradient(135deg, #ff66cc, #cc33ff);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(255, 102, 204, 0.7);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.6s;
+  z-index: 1000;
+}
+
+/* Hover thì bắt đầu nhấp nháy */
+#startButton:hover {
+  animation: flash 0.8s infinite;
+  transform: translateX(-50%) scale(1.05);
+}
+
+@keyframes flash {
+  0% { box-shadow: 0 0 10px rgba(255, 102, 204, 0.7); }
+  50% { box-shadow: 0 0 25px rgba(255, 102, 204, 1); }
+  100% { box-shadow: 0 0 10px rgba(255, 102, 204, 0.7); }
+}
+</style>
+
+
+<video id="introVideo" width="100%" height="100%" autoplay muted playsinline style="display: none; position: absolute; top: 0; left: 0; object-fit: cover; z-index: 99;">
+  <source src="intro3.mp4" type="video/mp4" />
+  Trình duyệt của bạn không hỗ trợ video.
+</video>
 
 <!-- Thẻ cào -->
 <div id="scratchContainer">
@@ -56,6 +132,51 @@
 </div>
 
 <script type="module">
+
+  document.body.style.pointerEvents = "none"; // tạm khóa tương tác
+
+const introText = "Đây là món quà nhỏ anh dành tặng cho em. Hy vọng em bé sẽ cười thật tươi khi nhìn thấy nó nha ^^💖";
+let i = 0;
+
+function typeWriterEffect() {
+  if (i < introText.length) {
+    document.getElementById("introText").innerHTML += introText.charAt(i);
+    i++;
+    setTimeout(typeWriterEffect, 90);
+  } else {
+  // Sau khi gõ xong → hiện nút Bắt đầu
+  const startButton = document.getElementById("startButton");
+startButton.style.display = "block";
+document.body.style.pointerEvents = "auto"; // Mở lại tương tác
+  startButton.onclick = () => {
+  document.getElementById("introText").style.display = "none";
+  startButton.remove();
+
+  const blackout = document.getElementById("blackout");
+  blackout.style.display = "block";
+
+  setTimeout(() => {
+    const video = document.getElementById("introVideo");
+    blackout.style.display = "none";
+    video.style.display = "block";
+    video.play();
+
+    video.onended = () => {
+      video.remove();
+      document.body.style.pointerEvents = "auto";
+      document.body.style.background = "#160016";
+      startScene();
+    };
+  }, 500); // tắt màn hình 0.5 giây trước khi load video
+};
+
+  }
+}
+setTimeout(() => {
+  typeWriterEffect();
+}, 1000); // 1000ms = 1 giây
+
+
 // PHẦN GỢI Ý BỔ SUNG
 import * as THREE from "https://cdn.skypack.dev/three@0.136.0";
 import { OrbitControls } from "https://cdn.skypack.dev/three@0.136.0/examples/jsm/controls/OrbitControls.js";
@@ -105,6 +226,8 @@ function createTextGlow(charGeom) {
 function tweenCamera(camera) {
   gsap.to(camera.position, { duration: 3, x: 10, z: 10, y: 6, onUpdate: () => camera.lookAt(0, 0, 0) });
 }
+
+function startScene() {
 // Scene setup
 const scene = new THREE.Scene();
 const shootingStars = [];
@@ -159,7 +282,7 @@ const fontLoader = new FontLoader();
 fontLoader.load(
   'https://raw.githubusercontent.com/tmt120407/a/refs/heads/main/Be%20Vietnam%20Pro_Regular.json',
   (font) => {
-    const message = "Món quà này anh dành tặng cho em bé ớ";
+    const message = "Em Bé Xinh Đẹp ^^";
     const radius = 13.5;
     const textSize = 2;
     
@@ -536,8 +659,21 @@ if (!clickedSprite.userData.isHeart && clickedSprite.originalScale) {
   console.log(`Đã click vào be5.jpg ${heartClickCount} lần`);
 
   if (heartClickCount >= 5) {
+  const blackout = document.getElementById("blackout");
+  blackout.style.opacity = 0;
+  blackout.style.display = "block";
+  blackout.style.transition = "opacity 1s ease";
+
+  // Kích hoạt hiệu ứng mờ dần
+  setTimeout(() => {
+    blackout.style.opacity = 1;
+  }, 100); // đợi 1 chút để tránh bỏ qua transition
+
+  // Sau khi hiệu ứng mờ hoàn tất → chuyển trang
+  setTimeout(() => {
     window.location.href = "index3.html";
-  } else {
+  }, 1600); // = 100 (delay đầu) + 1500 (hiệu ứng fade)
+} else {
     // Hiệu ứng nhẹ nếu chưa đủ 3 lần
     gsap.to(clickedSprite.scale, {
       x: clickedSprite.originalScale.x * 1.2,
@@ -733,6 +869,7 @@ shootingStarGeometry.attributes.position.needsUpdate = true;
 
   renderer.render(scene, camera);
 });
+}
 </script>
 </body>
 </html>
